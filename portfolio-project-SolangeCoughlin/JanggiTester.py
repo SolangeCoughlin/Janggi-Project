@@ -180,18 +180,18 @@ class MyTestCase(unittest.TestCase):
         Janggi.make_move("h1", "g3")
         Janggi.make_move("e7", "e6")
         Janggi.make_move("e3", "e6")
-        print(Janggi.is_in_check("Blue"))
-        Janggi.make_move("h8", "e8")
-        Janggi.make_move("d3", "e5")
-        Janggi.make_move("c8", "c4")
-        Janggi.make_move("e5", "c4")
-        Janggi.make_move("i10", "i8")
-        Janggi.make_move("g4", "f4")
-        Janggi.make_move("i8", "f8")
-        Janggi.make_move("g3", "h5")
-        Janggi.make_move("h10", "g8")
+        # Janggi.make_move("h8", "e8") # false
+        # Janggi.make_move("d3", "e5") # false
+        # Janggi.make_move("c8", "c4") # false
+        # Janggi.make_move("e5", "c4") # false
+        Janggi.make_move("i10", "i8") # true
+        Janggi.make_move("g4", "f4") # true
+        # Janggi.make_move("i8", "f8") # false
+        # Janggi.make_move("g3", "h5") # false
+        Janggi.make_move("h10", "g8") # true
         Janggi.make_move("e6", "e3")
         #Janggi.print_board()
+        Janggi.is_in_check("blue")
         self.assertEqual(Janggi.is_in_check("blue"),True)
         self.assertEqual(Janggi.is_in_check("red"), False)
 

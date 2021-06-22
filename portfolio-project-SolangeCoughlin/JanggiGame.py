@@ -216,7 +216,12 @@ class JanggiGame():
             self.update_all_move_lists()
             self.update_turn()
 
+        self.record_move(start_pos, end_pos)
         return True
+
+    def record_move(self, start_pos, end_pos):
+        with open('move_list.txt','a') as outfile:
+            outfile.write(start_pos + '->' + end_pos + '\n')
 
     def execute_move(self, start, end, piece):
         """Updates board and piece positions for valid moves"""
