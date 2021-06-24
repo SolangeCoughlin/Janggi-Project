@@ -1,4 +1,5 @@
 import pygame
+import pygame.freetype
 pygame.init()
 
 WIDTH = 630
@@ -21,7 +22,7 @@ board = pygame.image.load('assets/janggiboard.png')
 scale_size = 76
 half_icon = scale_size//2
 
-FONT = pygame.font.SysFont(None,75)
+TITLE_FONT = pygame.freetype.SysFont("Courier",75)
 
 highlight = pygame.image.load('assets/highlight_block.png')
 

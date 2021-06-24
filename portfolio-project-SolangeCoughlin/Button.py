@@ -1,45 +1,62 @@
 import pygame
+import pygame.freetype
+from constants import *
 
 pygame.init()
 
 
 class Button:
     """Creates an instance of a button, which will display text to the user and can detect when it is clicked.
-    Behavior of the button when clicked is defined where the button is implemented"""
+    Behavior of the button when clicked is defined where the button is implemented
+    Refer here for how you want to refactor this: https://programmingpixels.com/handling-a-title-screen-game-flow-and-buttons-in-pygame.html
+    """
 
-    def __init__(self, btn_text, x, y, window, width=180, height=40):
-        self.x = x
-        self.y = y
-        self.height = height
-        self.width = width
-        self.btn_text = btn_text
-        self.window = window
 
-    def make_button(self):
-        """Creates an instances of a button, and returns True if the button is clicked and False otherwise.
-        Also draws the button onto the window defined when the button is initialized"""
+    def __init__(self, center, text, text_size, text_rgb, bg_rgb=YELLOW, action=None):
 
-        clicked = False
-        action = False
+        self.mouse_over = False
+        self.action = action
 
-        pos = pygame.mouse.get_pos()
+        default_text = self.create_surface(text,text_size, text_rgb, bg_rgb)
+        hovered_text = self.create_surface(text, text_size*1.2, text_rgb, bg_rgb)
 
-        button = pygame.Rect(self.x, self.y, self.width, self.height)
-        font = pygame.font.SysFont('Courier',20)
+        self.text_images = [default_text, hovered_text]
+        self.text_rects = [default_text.get_rect(center=center), hovered_text.get_rect(center=center)]
 
-        if button.collidepoint(pos):
-            if pygame.mouse.get_pressed()[0] == 1:
-                clicked = True
-                pygame.draw.rect(self.window, (230, 230, 230), button)
-            elif pygame.mouse.get_pressed()[0] == 0 and clicked is True:
-                clicked = False
-                action = True
-            else:
-                pygame.draw.rect(self.window, (230, 230, 230), button)
+    def create_surface(self, text, text_size, text_rgb,bg_rgb):
+        """
+        Creates and returns a surface containing text. Receives the text to be rendered, the text size, and the text color.
+        Renders the background as YELLOW by default to match the window fill
+        """
+
+        # create font object
+        font = pygame.freetype.SysFont('Courier', text_size)
+
+        # render it with appropriate size and color, store as a surface
+        text_surface, _ = font.render(text, text_rgb, bg_rgb)
+        # return the surface
+        return text_surface
+
+    @property
+    def image(self):
+        """Returns the smaller text image if the button is not hovered over, and the larger one if it is hovered over"""
+        return self.text_images[1] if self.mouse_over else self.text_images[0]
+
+    @property
+    def rect(self):
+        """Returns the smaller or larger text rect depending on if the text is hovered over"""
+        return self.text_rects[1] if self.mouse_over else self.text_rects[0]
+
+    def update_button(self, mouse_pos, mouse_up):
+        """Checks if the button is being interacted with"""
+        if self.rect.collidepoint(mouse_pos):
+            self.mouse_over = True
+            if mouse_up:
+                return self.action
         else:
-            pygame.draw.rect(self.window, (255, 255, 255), button)
+            self.mouse_over = False
 
-        txt_img = font.render(self.btn_text,True, (0,0,0))
-        text_len = txt_img.get_width()
-        self.window.blit(txt_img, ((self.x + self.width//2 - text_len//2), self.y+10))
-        return action
+    def draw_button(self, window):
+        """Draws the button onto a surface passed to this method"""
+        # Image is blitted onto the screen (essentially copied onto another surface) and the rect establishes the position
+        window.blit(self.image, self.rect)
