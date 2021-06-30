@@ -6,9 +6,9 @@ pygame.init()
 
 
 class Button:
-    """Creates an instance of a button, which will display text to the user and can detect when it is clicked.
-    Behavior of the button when clicked is defined where the button is implemented
-    Refer here for how you want to refactor this: https://programmingpixels.com/handling-a-title-screen-game-flow-and-buttons-in-pygame.html
+    """Creates an instance of a button with a center positon, text, size, color, background color, and action to return
+    when the button is clicked
+    References this tutorial: https://programmingpixels.com/handling-a-title-screen-game-flow-and-buttons-in-pygame.html
     """
 
 

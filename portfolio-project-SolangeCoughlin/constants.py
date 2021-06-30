@@ -2,6 +2,10 @@ import pygame
 import pygame.freetype
 pygame.init()
 
+"""
+Contains constants for locations, colors, fonts, and images used in the Janggi GUI
+"""
+
 WIDTH = 630
 HEIGHT = 700
 
