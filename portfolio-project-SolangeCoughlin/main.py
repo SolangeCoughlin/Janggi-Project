@@ -31,15 +31,16 @@ def draw_pieces(window,game,dict):
         piece.draw(window)
 
 def show_text(window,text,color):
-    font = pygame.freetype.SysFont("Courier", 50)
+    font = pygame.freetype.SysFont("Courier", 30)
     text_surface, _ = font.render(text, color)
-    text_rect = text_surface.get_rect(center = (300,350))
+    text_rect = text_surface.get_rect(center = (WIDTH//2,HEIGHT//2-50))
     window.blit(text_surface, text_rect)
 
 class GameState(Enum):
     QUIT = -1
     TITLE = 0
     PLAYING = 1
+    GAME_OVER = 2
 
 def main():
     pygame.init()
@@ -59,6 +60,8 @@ def main():
             game_state = title_screen(window)
         if game_state == GameState.PLAYING:
             game_state = play_game(window)
+        if game_state == GameState.GAME_OVER:
+            game_state = end_game(window)
         if game_state == GameState.QUIT:
             pygame.quit()
             return
@@ -164,18 +167,72 @@ def play_game(window):
                         draw_board(window)
                         start_letters = end = ""
 
-                # Action if the game is finished. Display the winner (note: this needs to be updated - right now this only shows
-                # that the same has ended when the user clicks after a move that puts a player in checkmate was made on the previous turn)
-                else:
-                    if Janggi.get_game_state() == "RED_WINS":
-                        show_text(window,"Red Wins!",RED)
-                    else:
-                        show_text(window,"Blue Wins!",BLUE)
-
         # Draw pieces on the board and update the display
         draw_pieces(window, Janggi, Janggi.get_piece_dictionary("Red"))
         draw_pieces(window, Janggi, Janggi.get_piece_dictionary("Blue"))
+
+        # Action if the game is finished. Display the winner
+        if Janggi.get_game_state() != "UNFINISHED":
+            return end_game(Janggi, window)
+            # if Janggi.get_game_state() == "RED_WON":
+            #     show_text(window, "Red Wins!", RED)
+            # else:
+            #     show_text(window, "Blue Wins!", BLUE)
         pygame.display.update()
+
+def end_game(game,window):
+    # Make rect that shows the game is over
+    end_box = pygame.Surface((250,250))
+    end_box_border = pygame.Surface((252,252))
+    end_box_rect = end_box.get_rect()
+    end_box_border_rect = end_box_border.get_rect(center=(WIDTH//2,HEIGHT//2))
+    end_box_rect.center = (WIDTH//2,HEIGHT//2)
+
+    # Make buttons and put in a collection
+    back_button = Button(
+        (WIDTH//2, HEIGHT//2 + 25),
+        "Back to Menu",
+        20,
+        BLACK,
+        WHITE,
+        GameState.TITLE
+    )
+    quit_button = Button(
+        (WIDTH//2, HEIGHT//2+75),
+        "Quit",
+        20,
+        BLACK,
+        WHITE,
+        GameState.QUIT
+    )
+
+    buttons = [back_button, quit_button]
+
+    while True:
+        mouse_up = False
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                mouse_up = True
+
+        end_box.fill(WHITE)
+        end_box_border.fill(BLACK)
+        window.blit(end_box_border, end_box_border_rect)
+        window.blit(end_box, end_box_rect)
+
+        if game.get_game_state() == "RED_WON":
+            show_text(window, "Red Wins!", RED)
+        else:
+            show_text(window, "Blue Wins!", BLUE)
+
+        for button in buttons:
+            button_action = button.update_button(pygame.mouse.get_pos(), mouse_up)
+            if button_action is not None:
+                return button_action
+            # Drawing onto the window instead of the end box gets the buttons to actually work
+            button.draw_button(window)
+
+        pygame.display.update()
+
 
 if __name__ == "__main__":
     main()
